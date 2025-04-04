@@ -27,6 +27,7 @@ export const TextView: React.FC<TextViewI> = ({
     regular: "font-normal",
     "semi-bold": "font-semibold",
     bold: "font-bold",
+    medium: "font-medium",
   };
 
   return (
