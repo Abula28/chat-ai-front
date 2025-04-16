@@ -1,6 +1,6 @@
 import { DividerI } from "./DividerT";
 
-const Divider: React.FC<DividerI> = ({
+export const Divider: React.FC<DividerI> = ({
   type = "horizontal",
   className,
   ...rest
@@ -17,5 +17,3 @@ const Divider: React.FC<DividerI> = ({
     ></div>
   );
 };
-
-export default Divider;

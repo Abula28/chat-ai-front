@@ -7,7 +7,7 @@ export type TextViewTypeT =
 export type TextViewTagT = `h${1 | 2 | 3 | 4 | 5 | 6}` | "p" | "span";
 export type TextViewWeightT = "regular" | "semi-bold" | "bold" | "medium";
 
-export interface TextViewI {
+export interface TextViewI extends React.HTMLAttributes<HTMLElement> {
   type: TextViewTypeT;
   weight?: TextViewWeightT;
   tag?: TextViewTagT;

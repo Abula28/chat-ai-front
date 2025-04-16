@@ -39,6 +39,10 @@ export default {
           neutral: "#ACB4C0",
           dark: "#EDF0F4",
         },
+        navy: {
+          600: "#2B3674",
+          700: "#1B2559",
+        },
       },
     },
   },

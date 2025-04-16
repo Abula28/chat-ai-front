@@ -11,6 +11,7 @@ export const Button: React.FC<ButtonI> = ({
   className = "",
   disabled = false,
   type = "button",
+  loading = false,
 }) => {
   const sizeClasses = {
     default: "h-[42px] px-4 py-3 gap-1",
@@ -52,27 +53,37 @@ export const Button: React.FC<ButtonI> = ({
     <button
       type={type}
       onClick={onClick}
-      disabled={disabled}
+      disabled={disabled || loading}
       className={`${baseClasses} ${sizeClasses[size]} ${variantClasses[variant]} ${className}`}
     >
-      {icon && <span className="flex items-center justify-center">{icon}</span>}
-      <TextView
-        type={size === "default" ? "paragraph-default" : "paragraph-small"}
-        weight="semi-bold"
-      >
-        {children}
-      </TextView>
-      {count !== undefined && (
-        <div
-          className={`flex items-center justify-center rounded-full ${countClasses[variant]} `}
-        >
+      {loading ? (
+        <div className="flex items-center justify-center">
+          <div className="h-4 w-4 animate-spin rounded-full border-2 border-white border-t-transparent" />
+        </div>
+      ) : (
+        <>
+          {icon && (
+            <span className="flex items-center justify-center">{icon}</span>
+          )}
           <TextView
-            type={size === "default" ? "paragraph-small" : "display-1"}
+            type={size === "default" ? "paragraph-default" : "paragraph-small"}
             weight="semi-bold"
           >
-            {count}
+            {children}
           </TextView>
-        </div>
+          {count !== undefined && (
+            <div
+              className={`flex items-center justify-center rounded-full ${countClasses[variant]} `}
+            >
+              <TextView
+                type={size === "default" ? "paragraph-small" : "display-1"}
+                weight="semi-bold"
+              >
+                {count}
+              </TextView>
+            </div>
+          )}
+        </>
       )}
     </button>
   );

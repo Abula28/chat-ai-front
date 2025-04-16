@@ -3,7 +3,7 @@ import { ReactNode } from "react";
 export type ButtonSizeT = "default" | "small";
 export type ButtonVariantT = "primary" | "secondary" | "tertiary";
 
-export interface ButtonI {
+export interface ButtonI extends React.ButtonHTMLAttributes<HTMLButtonElement> {
   children: ReactNode;
   size?: ButtonSizeT;
   variant?: ButtonVariantT;
@@ -13,4 +13,5 @@ export interface ButtonI {
   className?: string;
   disabled?: boolean;
   type?: "button" | "submit" | "reset";
+  loading?: boolean;
 }

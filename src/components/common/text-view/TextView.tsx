@@ -6,6 +6,7 @@ export const TextView: React.FC<TextViewI> = ({
   tag: Tag = "p",
   weight,
   className,
+  ...rest
 }) => {
   const textType: Record<TextViewI["type"], string> = {
     "display-10": "text-[72px] leading-[115%]",
@@ -33,6 +34,7 @@ export const TextView: React.FC<TextViewI> = ({
   return (
     <Tag
       className={`font-inter ${textType[type]} ${weightClasses[weight ?? "regular"]} ${className ?? ""}`}
+      {...rest}
     >
       {children}
     </Tag>
