@@ -5,16 +5,21 @@ import {
   GetUserSessionsResT,
   PostSessionResT,
 } from "../types";
-import { PostMessageReqT } from "../types/requestsT/chatRequests";
+import {
+  PostMessageReqT,
+  PostSessionReqT,
+} from "../types/requestsT/chatRequests";
 
 const { chat } = endpoints;
 
-export const postSession = async (): Promise<PostSessionResT> => {
-  const httpRequest = await axiosClient.post(chat.postSession);
+export const postSession = async (
+  data: PostSessionReqT,
+): Promise<PostSessionResT> => {
+  const httpRequest = await axiosClient.post(chat.postSession, data);
   return httpRequest.data;
 };
 
-export const getUserSessions = async (): Promise<GetUserSessionsResT> => {
+export const getUserSessions = async (): Promise<GetUserSessionsResT[]> => {
   const httpRequest = await axiosClient.get(chat.sessions);
   return httpRequest.data;
 };

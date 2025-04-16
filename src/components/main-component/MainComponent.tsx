@@ -19,6 +19,7 @@ import { GetSessionMessagesResT } from "../../backend/types";
 import useUserStore from "../../store/userStore";
 import useLayoutStore from "../../store/sidebarStore";
 import ReactMarkdown from "react-markdown";
+import { useQueryClient } from "@tanstack/react-query";
 const MainComponent = () => {
   const [value, setValue] = useState("");
   const [isLogin, setIsLogin] = useState(true);
@@ -28,6 +29,7 @@ const MainComponent = () => {
   const { isOpen, setIsOpen } = useAuthModalStore();
   const { selectedPrompt } = useLayoutStore();
   const { data: user } = useUserStore();
+  const queryClient = useQueryClient();
 
   const { mutate: getSessionMessages, isPending: isSessionLoading } =
     useGetSessionMessages();
@@ -87,12 +89,18 @@ const MainComponent = () => {
     ]);
 
     if (!sessionId) {
-      createSession(undefined, {
-        onSuccess: (data) => {
-          navigate(`/${data.sessionId}`, { replace: true });
-          handleSendMessage(data.sessionId);
+      const title = value.length > 20 ? value.slice(0, 17) + "..." : value;
+
+      createSession(
+        { title },
+        {
+          onSuccess: (data) => {
+            navigate(`/${data.sessionId}`, { replace: true });
+            handleSendMessage(data.sessionId);
+            queryClient.invalidateQueries({ queryKey: ["useGetUserSessions"] });
+          },
         },
-      });
+      );
     } else {
       handleSendMessage(sessionId as string);
     }
@@ -119,11 +127,23 @@ const MainComponent = () => {
 
   const messageRenderer = () => {
     if (isSessionLoading) return <div>Loading...</div>;
-    if (messages.length === 0) return <div>No messages</div>;
+    if (messages.length === 0)
+      return (
+        <div className="flex w-full items-center justify-center">
+          <div className="flex flex-col items-center gap-2">
+            <TextView type="display-8" weight="medium">
+              Start Conversation
+            </TextView>
+            <TextView type="display-3" weight="medium">
+              No messages yet
+            </TextView>
+          </div>
+        </div>
+      );
     return (
       <div className="flex h-[600px] flex-col gap-6 overflow-y-auto pr-4">
-        {messages.map(({ content, sender, createdAt }) => (
-          <div className="flex flex-col gap-6">
+        {messages.map(({ content, sender, createdAt, _id }) => (
+          <div className="flex flex-col gap-6" key={_id}>
             {/* User Message */}
             {sender === "user" && (
               <div className="flex max-w-[500px] gap-3">
@@ -133,7 +153,7 @@ const MainComponent = () => {
                     weight="medium"
                     className="text-black"
                   >
-                    {user?.username.charAt(0)}
+                    {user?.username.charAt(0).toUpperCase()}
                   </TextView>
                 </div>
                 <div className="flex flex-col gap-2">
@@ -212,8 +232,8 @@ const MainComponent = () => {
         </div>
         {isLogin ? <Login /> : <Register />}
       </Modal>
-      <div className="z-10 flex w-full items-center justify-center px-4">
-        <div className="flex w-full max-w-[800px] flex-col gap-6">
+      <div className="z-10 flex h-full w-full items-center justify-center px-4 py-5">
+        <div className="flex h-full w-full max-w-[900px] flex-col justify-between gap-6">
           {/* Messages Container */}
           {messageRenderer()}
 

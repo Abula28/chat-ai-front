@@ -5,11 +5,11 @@ import {
   postMessage,
   postSession,
 } from "../services";
-import { PostMessageReqT } from "../types/requestsT";
+import { PostMessageReqT, PostSessionReqT } from "../types/requestsT";
 
 export const useCreateSession = () => {
   return useMutation({
-    mutationFn: postSession,
+    mutationFn: (data: PostSessionReqT) => postSession(data),
     mutationKey: ["useCreateSession"],
   });
 };

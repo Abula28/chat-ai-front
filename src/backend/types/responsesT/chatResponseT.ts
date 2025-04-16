@@ -5,6 +5,7 @@ export interface PostSessionResT {
 export interface GetUserSessionsResT {
   _id: string;
   userId: string;
+  title: string;
   createdAt: string;
   updatedAt: string;
 }
