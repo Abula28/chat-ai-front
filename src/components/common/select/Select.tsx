@@ -1,61 +1,60 @@
+import { useEffect, useState } from "react";
 import { SelectProps } from "./SelectT";
 import { TextView } from "../text-view/TextView";
-import { cn } from "../../../utils/helperFuncs";
-
+import { BiChevronDown, BiChevronUp } from "react-icons/bi";
 export const Select: React.FC<SelectProps> = ({
   options,
   helperText,
   error,
   className,
+  placeholder,
+  value,
+  onChange,
   ...props
 }) => {
+  const [isOpen, setIsOpen] = useState(false);
+  const [selected, setSelected] = useState<string>(value || "");
+
+  useEffect(() => {
+    if (value) setSelected(value);
+  }, [value]);
+
+  const selectedValue = options?.find((e) => e.value === selected);
+
+  const handleOptionClick = (e: string) => {
+    setSelected(e);
+    setIsOpen(false);
+    onChange?.(e);
+  };
+
   return (
-    <div className="flex w-full flex-col">
-      <div className="relative w-[120px]">
-        <select
-          className={cn(
-            "bg-navy-700 w-full cursor-pointer appearance-none rounded-lg px-4 py-3 text-base text-white outline-none transition-colors",
-            error
-              ? "border-red-500 focus:border-red-500"
-              : "hover:bg-navy-600 border-transparent",
-            className,
-          )}
-          {...props}
-        >
-          {options.map((option) => (
-            <option
-              key={option.value}
-              value={option.value}
-              className="bg-navy-700 cursor-pointer text-white"
+    <div
+      className={`relative flex w-full cursor-pointer items-center gap-3 rounded-lg p-3 ${className ? className : ""}`}
+      onClick={() => setIsOpen(!isOpen)}
+      {...props}
+    >
+      <TextView type="paragraph-small" className="text-white">
+        {selectedValue ? selectedValue.label : placeholder}
+      </TextView>
+
+      {isOpen ? (
+        <BiChevronUp className="h-4 w-4 text-white" />
+      ) : (
+        <BiChevronDown className="h-4 w-4 text-white" />
+      )}
+
+      {isOpen && (
+        <div className="absolute left-0 top-[120%] z-[100] flex w-max min-w-full flex-col gap-1 rounded-md bg-[#1E2235] p-2">
+          {options?.map((e) => (
+            <div
+              className={`rounded-sm p-2 duration-200 hover:bg-neutral-700/80 ${selected === e.value ? "bg-neutral-700" : ""}`}
+              key={e.value}
+              onClick={() => handleOptionClick(e.value)}
             >
-              {option.label}
-            </option>
+              {e.label}
+            </div>
           ))}
-        </select>
-        <div className="pointer-events-none absolute right-4 top-1/2 -translate-y-1/2">
-          <svg
-            width="12"
-            height="8"
-            viewBox="0 0 12 8"
-            fill="none"
-            xmlns="http://www.w3.org/2000/svg"
-          >
-            <path
-              d="M1 1.5L6 6.5L11 1.5"
-              stroke="white"
-              strokeWidth="2"
-              strokeLinecap="round"
-            />
-          </svg>
         </div>
-      </div>
-      {helperText && (
-        <TextView
-          type="paragraph-small"
-          className={cn("mt-1", error ? "text-red-500" : "text-gray-500")}
-        >
-          {helperText}
-        </TextView>
       )}
     </div>
   );

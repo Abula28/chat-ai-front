@@ -3,6 +3,7 @@ import useSidebarStore from "../../../store/sidebarStore";
 import { TextView } from "../../common";
 import { useGetUserSessions } from "../../../backend/requests/chat";
 import { useLocation, useNavigate } from "react-router";
+import { PiNotePencil } from "react-icons/pi";
 const Sidebar = () => {
   const { open, setOpen } = useSidebarStore();
   const { data: sessions } = useGetUserSessions();
@@ -40,10 +41,18 @@ const Sidebar = () => {
     <div
       className={`hidden h-full w-[260px] flex-col gap-10 ${!open ? "hidden" : "md:flex"}`}
     >
-      <div className="flex w-full items-center justify-between">
+      <div className="flex w-full items-center justify-between pr-3">
         <FiSidebar
           className="h-6 w-6 cursor-pointer text-[#9b9b9b]"
           onClick={() => setOpen(false)}
+        />
+        <PiNotePencil
+          className="h-6 w-6 cursor-pointer text-[#9b9b9b]"
+          onClick={() =>
+            navigate("/", {
+              replace: true,
+            })
+          }
         />
       </div>
 

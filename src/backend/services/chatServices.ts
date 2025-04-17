@@ -20,6 +20,12 @@ export const postSession = async (
 };
 
 export const getUserSessions = async (): Promise<GetUserSessionsResT[]> => {
+  const token = localStorage.getItem("token");
+
+  if (!token) {
+    throw new Error("No token found");
+  }
+
   const httpRequest = await axiosClient.get(chat.sessions);
   return httpRequest.data;
 };

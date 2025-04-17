@@ -6,7 +6,6 @@ import {
   postSession,
 } from "../services";
 import { PostMessageReqT, PostSessionReqT } from "../types/requestsT";
-
 export const useCreateSession = () => {
   return useMutation({
     mutationFn: (data: PostSessionReqT) => postSession(data),
@@ -18,6 +17,7 @@ export const useGetUserSessions = () => {
   return useQuery({
     queryKey: ["useGetUserSessions"],
     queryFn: getUserSessions,
+    retry: false,
   });
 };
 

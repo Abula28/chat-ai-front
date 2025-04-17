@@ -1,6 +1,7 @@
 import { useMutation } from "@tanstack/react-query";
 import { LoginReqT, RegisterReqT } from "../types";
 import { getUserCheckIn, postLogin, postRegister } from "../services";
+import { isAuth } from "../../utils";
 
 export const useLoginReq = () => {
   return useMutation({
@@ -18,7 +19,12 @@ export const useRegisterReq = () => {
 
 export const useUserCheckInReq = () => {
   return useMutation({
-    mutationFn: () => getUserCheckIn(),
+    mutationFn: () => {
+      if (!isAuth()) {
+        throw new Error("Unauthorized");
+      }
+      return getUserCheckIn();
+    },
     mutationKey: ["useUserCheckInReq"],
   });
 };

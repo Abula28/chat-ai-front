@@ -5,6 +5,8 @@ import { toast } from "react-toastify";
 import { AxiosError } from "axios";
 import useUserStore from "../../../store/userStore";
 import useAuthModalStore from "../../../store/authModalStore";
+import { LoginReqT } from "../../../backend";
+
 interface ErrorResponse {
   message: string;
 }
@@ -13,7 +15,7 @@ const Login = () => {
   const { setData } = useUserStore();
   const { mutate, isPending } = useLoginReq();
   const { setIsOpen } = useAuthModalStore();
-  const [values, setValues] = useState({
+  const [values, setValues] = useState<LoginReqT>({
     email: "",
     password: "",
   });
@@ -30,6 +32,7 @@ const Login = () => {
         setData(data.user);
         localStorage.setItem("token", data.token);
         setIsOpen(false);
+        window.location.reload();
       },
       onError(error) {
         toast.error(
@@ -65,7 +68,7 @@ const Login = () => {
         type="submit"
         loading={isPending}
       >
-        Submit
+        Login
       </Button>
     </form>
   );

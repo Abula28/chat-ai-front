@@ -22,11 +22,10 @@ import ReactMarkdown from "react-markdown";
 import { useQueryClient } from "@tanstack/react-query";
 const MainComponent = () => {
   const [value, setValue] = useState("");
-  const [isLogin, setIsLogin] = useState(true);
   const textareaRef = useRef<HTMLTextAreaElement>(null);
   const navigate = useNavigate();
   const { sessionId } = useParams();
-  const { isOpen, setIsOpen } = useAuthModalStore();
+  const { isOpen, setIsOpen, isLogin, setIsLogin } = useAuthModalStore();
   const { selectedPrompt } = useLayoutStore();
   const { data: user } = useUserStore();
   const queryClient = useQueryClient();
@@ -51,6 +50,7 @@ const MainComponent = () => {
   };
 
   const handleSendMessage = (id: string) => {
+    if (!isAuth) return;
     postMessage(
       {
         sessionId: id,
@@ -117,7 +117,10 @@ const MainComponent = () => {
   };
 
   useEffect(() => {
-    if (!sessionId) return;
+    if (!sessionId || !isAuth()) {
+      setMessages([]);
+      return;
+    }
     getSessionMessages(sessionId, {
       onSuccess: (data) => {
         setMessages(data);
@@ -143,10 +146,10 @@ const MainComponent = () => {
     return (
       <div className="flex h-[600px] flex-col gap-6 overflow-y-auto pr-4">
         {messages.map(({ content, sender, createdAt, _id }) => (
-          <div className="flex flex-col gap-6" key={_id}>
+          <div className="flex w-full flex-col gap-6" key={_id}>
             {/* User Message */}
             {sender === "user" && (
-              <div className="flex max-w-[500px] gap-3">
+              <div className="flex w-full gap-3">
                 <div className="flex h-8 w-8 shrink-0 items-center justify-center overflow-hidden rounded-full bg-white">
                   <TextView
                     type="display-2"
@@ -177,7 +180,7 @@ const MainComponent = () => {
 
             {/* AI Response */}
             {sender === "assistant" && (
-              <div className="flex gap-3">
+              <div className="flex w-[90%] gap-3">
                 <div className="h-8 w-8 shrink-0 overflow-hidden rounded-full bg-blue-600">
                   <img
                     src={AiImage}
@@ -185,7 +188,7 @@ const MainComponent = () => {
                     className="h-full w-full object-cover"
                   />
                 </div>
-                <div className="flex flex-col gap-2">
+                <div className="flex w-full flex-col gap-2">
                   <div className="flex items-center gap-3">
                     <TextView type="display-2">LanguageGUI</TextView>
                     <Divider type="vertical" />
@@ -198,7 +201,9 @@ const MainComponent = () => {
                     </TextView>
                   </div>
                   <div className="rounded-lg bg-[#1E2235] p-4 text-[#ACB4C0]">
-                    <ReactMarkdown>{content}</ReactMarkdown>
+                    <div className="prose prose-invert max-w-none overflow-x-auto break-words">
+                      <ReactMarkdown>{content}</ReactMarkdown>
+                    </div>
                   </div>
                 </div>
               </div>

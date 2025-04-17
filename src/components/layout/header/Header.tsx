@@ -7,11 +7,10 @@ import useAuthModalStore from "../../../store/authModalStore";
 import { useEffect, useState } from "react";
 import { BiLogOut } from "react-icons/bi";
 import { useGetSystemPrompts } from "../../../backend";
-import { Select } from "../../common/select/Select";
 import { Link, useNavigate } from "react-router";
 import { MdAdminPanelSettings } from "react-icons/md";
 import useLayoutStore from "../../../store/sidebarStore";
-
+import { Select } from "../../common/select/Select";
 const Header = () => {
   const { open, setOpen } = useSidebarStore();
   const { data, setData } = useUserStore();
@@ -30,6 +29,7 @@ const Header = () => {
     localStorage.removeItem("token");
     setData(null);
     navigate("/");
+    window.location.reload();
   };
 
   const userInfoRenderer = () => {
@@ -51,7 +51,7 @@ const Header = () => {
         </TextView>
 
         {dropdownOpen && (
-          <div className="absolute right-0 top-full z-10 flex flex-col gap-2 rounded-md bg-neutral-650 p-2 shadow-md">
+          <div className="absolute right-0 top-full z-[100] flex flex-col gap-2 rounded-md bg-neutral-650 p-2 shadow-md">
             {data.role === "admin" && (
               <div className="flex items-center gap-2">
                 <Link to={"/admin"}>
@@ -73,7 +73,7 @@ const Header = () => {
   const selectOption =
     knowledgeData?.prompts.map((e) => ({
       value: e._id,
-      label: e.category.toUpperCase(),
+      label: e.label,
     })) || [];
 
   return (
@@ -86,8 +86,8 @@ const Header = () => {
           />
         )}
         <Select
-          options={[...selectOption]}
-          onChange={(e) => setSelectedPrompt(e.target.value)}
+          options={selectOption}
+          onChange={(e) => setSelectedPrompt(e)}
           value={selectedPrompt}
         />
       </div>
