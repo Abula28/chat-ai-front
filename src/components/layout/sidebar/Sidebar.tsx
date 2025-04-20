@@ -4,6 +4,7 @@ import { TextView } from "../../common";
 import { useGetUserSessions } from "../../../backend/requests/chat";
 import { useLocation, useNavigate } from "react-router";
 import { PiNotePencil } from "react-icons/pi";
+
 const Sidebar = () => {
   const { open, setOpen } = useSidebarStore();
   const { data: sessions } = useGetUserSessions();
@@ -21,7 +22,7 @@ const Sidebar = () => {
     }
 
     return (
-      <div className="flex flex-col gap-[2px]">
+      <div className="customScrollbar flex max-h-[80vh] flex-col gap-[2px] overflow-y-auto">
         {sessions?.map((e) => (
           <div
             className={`cursor-pointer rounded-lg p-3 duration-200 hover:bg-neutral-700/80 ${sessionId === e._id ? "bg-neutral-700" : ""}`}

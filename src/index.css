@@ -18,6 +18,12 @@
   }
 }
 
+.customScrollbar {
+  &::-webkit-scrollbar-thumb {
+    background: rgb(2 6 23 / 1);
+  }
+}
+
 body {
   background: #23283d;
   color: #fff;
@@ -38,4 +44,15 @@ body {
   );
   pointer-events: none;
   z-index: 1;
+}
+
+@layer utilities {
+  .after-dot::after {
+    content: "";
+    position: absolute;
+    width: 100%;
+    padding-bottom: 100%;
+    background-color: white;
+    border-radius: 9999px;
+  }
 }

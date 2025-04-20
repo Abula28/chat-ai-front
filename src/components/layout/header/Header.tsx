@@ -8,9 +8,11 @@ import { useEffect, useState } from "react";
 import { BiLogOut } from "react-icons/bi";
 import { useGetSystemPrompts } from "../../../backend";
 import { Link, useNavigate } from "react-router";
-import { MdAdminPanelSettings } from "react-icons/md";
+import { MdOutlineAdminPanelSettings } from "react-icons/md";
 import useLayoutStore from "../../../store/sidebarStore";
 import { Select } from "../../common/select/Select";
+import { PiNotePencil } from "react-icons/pi";
+
 const Header = () => {
   const { open, setOpen } = useSidebarStore();
   const { data, setData } = useUserStore();
@@ -21,7 +23,7 @@ const Header = () => {
   const navigate = useNavigate();
 
   useEffect(() => {
-    if (!knowledgeData) return;
+    if (!knowledgeData || !knowledgeData.prompts.length) return;
     setSelectedPrompt(knowledgeData.prompts[0]._id);
   }, [knowledgeData]);
 
@@ -53,12 +55,13 @@ const Header = () => {
         {dropdownOpen && (
           <div className="absolute right-0 top-full z-[100] flex flex-col gap-2 rounded-md bg-neutral-650 p-2 shadow-md">
             {data.role === "admin" && (
-              <div className="flex items-center gap-2">
-                <Link to={"/admin"}>
-                  <TextView type="paragraph-small">Admin</TextView>
-                </Link>
-                <MdAdminPanelSettings />
-              </div>
+              <Link
+                className="flex items-center gap-2"
+                to={"/admin/system-prompts"}
+              >
+                <TextView type="paragraph-small">Admin</TextView>
+                <MdOutlineAdminPanelSettings />
+              </Link>
             )}
             <div className="flex items-center gap-2" onClick={handleLogout}>
               <TextView type="paragraph-small">Logout</TextView>
@@ -80,10 +83,20 @@ const Header = () => {
     <div className="flex w-full justify-between border-b border-[#4B5268]/30 p-3">
       <div className="flex items-center gap-2">
         {!open && (
-          <FiSidebar
-            className="h-6 w-6 cursor-pointer text-[#9b9b9b]"
-            onClick={() => setOpen(true)}
-          />
+          <>
+            <FiSidebar
+              className="h-6 w-6 cursor-pointer text-[#9b9b9b]"
+              onClick={() => setOpen(true)}
+            />
+            <PiNotePencil
+              className="h-6 w-6 cursor-pointer text-[#9b9b9b]"
+              onClick={() =>
+                navigate("/", {
+                  replace: true,
+                })
+              }
+            />
+          </>
         )}
         <Select
           options={selectOption}

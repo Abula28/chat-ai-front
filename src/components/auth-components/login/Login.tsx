@@ -5,11 +5,7 @@ import { toast } from "react-toastify";
 import { AxiosError } from "axios";
 import useUserStore from "../../../store/userStore";
 import useAuthModalStore from "../../../store/authModalStore";
-import { LoginReqT } from "../../../backend";
-
-interface ErrorResponse {
-  message: string;
-}
+import { ErrorResT, LoginReqT } from "../../../backend";
 
 const Login = () => {
   const { setData } = useUserStore();
@@ -36,7 +32,7 @@ const Login = () => {
       },
       onError(error) {
         toast.error(
-          (error as AxiosError<ErrorResponse>).response?.data?.message ||
+          (error as ErrorResT).response?.data?.message ||
             "Something went wrong",
         );
       },

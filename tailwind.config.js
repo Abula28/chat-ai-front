@@ -44,6 +44,38 @@ export default {
           700: "#1B2559",
         },
       },
+      animation: {
+        "spin-three-body": "spin78236 2s linear infinite",
+        wobble1: "wobble1 0.8s ease-in-out infinite",
+        "wobble1-delay": "wobble1 0.8s ease-in-out -0.3s infinite",
+        wobble2: "wobble2 0.8s ease-in-out infinite",
+      },
+      keyframes: {
+        spin78236: {
+          "0%": { transform: "rotate(0deg)" },
+          "100%": { transform: "rotate(360deg)" },
+        },
+        wobble1: {
+          "0%, 100%": {
+            transform: "translateY(0%) scale(1)",
+            opacity: "1",
+          },
+          "50%": {
+            transform: "translateY(-66%) scale(0.65)",
+            opacity: "0.8",
+          },
+        },
+        wobble2: {
+          "0%, 100%": {
+            transform: "translateY(0%) scale(1)",
+            opacity: "1",
+          },
+          "50%": {
+            transform: "translateY(66%) scale(0.65)",
+            opacity: "0.8",
+          },
+        },
+      },
     },
   },
   plugins: [],

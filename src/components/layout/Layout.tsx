@@ -3,6 +3,7 @@ import Sidebar from "./sidebar/Sidebar";
 import Header from "./header/Header";
 import { useUserCheckInReq } from "../../backend/requests/auth";
 import useUserStore from "../../store/userStore";
+
 const Layout = ({ children }: { children: React.ReactNode }) => {
   const { data, setData } = useUserStore();
   const { mutate: userCheckIn } = useUserCheckInReq();

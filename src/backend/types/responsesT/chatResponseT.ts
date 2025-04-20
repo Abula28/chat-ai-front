@@ -1,7 +1,3 @@
-export interface PostSessionResT {
-  sessionId: string;
-}
-
 export interface GetUserSessionsResT {
   _id: string;
   userId: string;

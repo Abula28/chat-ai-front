@@ -1,9 +1,7 @@
 import React, { useEffect, useRef, useState } from "react";
-import { format } from "date-fns";
 import { BiLibrary } from "react-icons/bi";
 import { BsImage, BsLink45Deg } from "react-icons/bs";
 import { IoGridOutline } from "react-icons/io5";
-import { AiImage } from "../../assets";
 import { isAuth } from "../../utils/helperFuncs";
 import { Modal, Divider, Button, TextView } from "../common";
 import Login from "../auth-components/login/Login";
@@ -16,10 +14,10 @@ import {
   useSendMessage,
 } from "../../backend/requests/chat";
 import { GetSessionMessagesResT } from "../../backend/types";
-import useUserStore from "../../store/userStore";
 import useLayoutStore from "../../store/sidebarStore";
-import ReactMarkdown from "react-markdown";
+import MessagesComponent from "./components/MessagesComponent";
 import { useQueryClient } from "@tanstack/react-query";
+
 const MainComponent = () => {
   const [value, setValue] = useState("");
   const textareaRef = useRef<HTMLTextAreaElement>(null);
@@ -27,13 +25,12 @@ const MainComponent = () => {
   const { sessionId } = useParams();
   const { isOpen, setIsOpen, isLogin, setIsLogin } = useAuthModalStore();
   const { selectedPrompt } = useLayoutStore();
-  const { data: user } = useUserStore();
   const queryClient = useQueryClient();
 
-  const { mutate: getSessionMessages, isPending: isSessionLoading } =
-    useGetSessionMessages();
-  const { mutate: postMessage, isPending: isMessageSending } = useSendMessage();
+  const { mutate: getSessionMessages } = useGetSessionMessages();
+  const { mutate: postMessage } = useSendMessage();
   const { mutate: createSession } = useCreateSession();
+  const [isSending, setIsSending] = useState(false);
 
   const [messages, setMessages] = useState<GetSessionMessagesResT[]>([]);
 
@@ -49,8 +46,10 @@ const MainComponent = () => {
     }
   };
 
-  const handleSendMessage = (id: string) => {
-    if (!isAuth) return;
+  const handleSendMessage = (id: string, userTempId: string) => {
+    if (!isAuth()) return;
+
+    setIsSending(true);
     postMessage(
       {
         sessionId: id,
@@ -61,14 +60,20 @@ const MainComponent = () => {
         onSuccess: () => {
           getSessionMessages(id, {
             onSuccess: (data) => {
-              setMessages(data);
+              const filtered = data.filter(
+                (msg) =>
+                  msg._id !== userTempId && msg._id !== userTempId + "-ai",
+              );
+              setMessages(filtered);
             },
           });
+        },
+        onSettled: () => {
+          setIsSending(false);
         },
       },
     );
   };
-
   const handleSubmit = () => {
     if (!isAuth()) {
       setIsOpen(true);
@@ -76,10 +81,12 @@ const MainComponent = () => {
     }
     if (!value.trim()) return;
 
+    const tempId = Date.now().toString();
+
     setMessages((prev) => [
       ...prev,
       {
-        _id: Date.now().toString(), // temporary ID
+        _id: tempId,
         sessionId: sessionId as string,
         content: value,
         sender: "user",
@@ -96,13 +103,13 @@ const MainComponent = () => {
         {
           onSuccess: (data) => {
             navigate(`/${data.sessionId}`, { replace: true });
-            handleSendMessage(data.sessionId);
+            handleSendMessage(data.sessionId, tempId);
             queryClient.invalidateQueries({ queryKey: ["useGetUserSessions"] });
           },
         },
       );
     } else {
-      handleSendMessage(sessionId as string);
+      handleSendMessage(sessionId as string, tempId);
     }
 
     setValue("");
@@ -127,93 +134,6 @@ const MainComponent = () => {
       },
     });
   }, [sessionId]);
-
-  const messageRenderer = () => {
-    if (isSessionLoading) return <div>Loading...</div>;
-    if (messages.length === 0)
-      return (
-        <div className="flex w-full items-center justify-center">
-          <div className="flex flex-col items-center gap-2">
-            <TextView type="display-8" weight="medium">
-              Start Conversation
-            </TextView>
-            <TextView type="display-3" weight="medium">
-              No messages yet
-            </TextView>
-          </div>
-        </div>
-      );
-    return (
-      <div className="flex h-[600px] flex-col gap-6 overflow-y-auto pr-4">
-        {messages.map(({ content, sender, createdAt, _id }) => (
-          <div className="flex w-full flex-col gap-6" key={_id}>
-            {/* User Message */}
-            {sender === "user" && (
-              <div className="flex w-full gap-3">
-                <div className="flex h-8 w-8 shrink-0 items-center justify-center overflow-hidden rounded-full bg-white">
-                  <TextView
-                    type="display-2"
-                    weight="medium"
-                    className="text-black"
-                  >
-                    {user?.username.charAt(0).toUpperCase()}
-                  </TextView>
-                </div>
-                <div className="flex flex-col gap-2">
-                  <div className="flex items-center gap-3">
-                    <TextView type="display-2">{user?.username}</TextView>
-                    <Divider type="vertical" />
-                    <TextView
-                      type="display-2"
-                      className="text-textView-neutral"
-                      weight="medium"
-                    >
-                      {format(createdAt, "h:mm a")}
-                    </TextView>
-                  </div>
-                  <div className="max-h-96 overflow-y-auto whitespace-pre-wrap break-words rounded-lg text-[#ACB4C0]">
-                    {content}
-                  </div>
-                </div>
-              </div>
-            )}
-
-            {/* AI Response */}
-            {sender === "assistant" && (
-              <div className="flex w-[90%] gap-3">
-                <div className="h-8 w-8 shrink-0 overflow-hidden rounded-full bg-blue-600">
-                  <img
-                    src={AiImage}
-                    alt="AI"
-                    className="h-full w-full object-cover"
-                  />
-                </div>
-                <div className="flex w-full flex-col gap-2">
-                  <div className="flex items-center gap-3">
-                    <TextView type="display-2">LanguageGUI</TextView>
-                    <Divider type="vertical" />
-                    <TextView
-                      type="display-2"
-                      className="text-textView-neutral"
-                      weight="medium"
-                    >
-                      {format(createdAt, "h:mm a")}
-                    </TextView>
-                  </div>
-                  <div className="rounded-lg bg-[#1E2235] p-4 text-[#ACB4C0]">
-                    <div className="prose prose-invert max-w-none overflow-x-auto break-words">
-                      <ReactMarkdown>{content}</ReactMarkdown>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            )}
-          </div>
-        ))}
-        {isMessageSending && <div>Loading...</div>}
-      </div>
-    );
-  };
 
   return (
     <>
@@ -240,7 +160,7 @@ const MainComponent = () => {
       <div className="z-10 flex h-full w-full items-center justify-center px-4 py-5">
         <div className="flex h-full w-full max-w-[900px] flex-col justify-between gap-6">
           {/* Messages Container */}
-          {messageRenderer()}
+          <MessagesComponent data={messages} isSending={isSending} />
 
           {/* Input Area */}
           <div className="flex flex-col gap-4 rounded-2xl border border-[#4B5268] bg-neutral-650 p-4">
@@ -272,7 +192,7 @@ const MainComponent = () => {
                 className="!rounded-lg bg-blue-600 px-4 py-2 text-white hover:bg-blue-700"
                 onClick={handleSubmit}
               >
-                {isAuth() ? "Send message" : "Login"}
+                {isAuth() ? "Send" : "Login"}
               </Button>
             </div>
           </div>
