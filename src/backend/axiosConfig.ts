@@ -1,7 +1,6 @@
 import axios from "axios";
 import useUserStore from "../store/userStore";
 import { toast } from "react-toastify";
-import { queryClient } from "../lib";
 const apiURL = import.meta.env.VITE_APP_API_URL;
 
 const axiosClient = axios.create({

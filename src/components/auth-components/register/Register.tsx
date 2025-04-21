@@ -16,7 +16,7 @@ const Register = () => {
   });
 
   const { mutate, isPending } = useRegisterReq();
-  const { setIsLogin } = useAuthModalStore();
+  const { setAuthState } = useAuthModalStore();
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setValues({ ...values, [e.target.name]: e.target.value });
@@ -26,7 +26,7 @@ const Register = () => {
     e.preventDefault();
     mutate(values, {
       onSuccess: (data) => {
-        setIsLogin(true);
+        setAuthState("login");
         toast.success(data.message);
         setValues({
           email: "",
