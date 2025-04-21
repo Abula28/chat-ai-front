@@ -17,13 +17,14 @@ import { GetSessionMessagesResT } from "../../backend/types";
 import useLayoutStore from "../../store/sidebarStore";
 import MessagesComponent from "./components/MessagesComponent";
 import { useQueryClient } from "@tanstack/react-query";
+import ForgotPassword from "../auth-components/forgot-password/ForgotPassword";
 
 const MainComponent = () => {
   const [value, setValue] = useState("");
   const textareaRef = useRef<HTMLTextAreaElement>(null);
   const navigate = useNavigate();
   const { sessionId } = useParams();
-  const { isOpen, setIsOpen, isLogin, setIsLogin } = useAuthModalStore();
+  const { isOpen, setIsOpen, authState, setAuthState } = useAuthModalStore();
   const { selectedPrompt } = useLayoutStore();
   const queryClient = useQueryClient();
 
@@ -120,7 +121,7 @@ const MainComponent = () => {
 
   const handleCloseModal = () => {
     setIsOpen(false);
-    setIsLogin(true);
+    setAuthState("login");
   };
 
   useEffect(() => {
@@ -135,28 +136,47 @@ const MainComponent = () => {
     });
   }, [sessionId]);
 
+  const authModalTitle = () => {
+    if (authState === "login") return "Log in";
+    if (authState === "register") return "Sign up";
+    return "Forgot Password";
+  };
+
+  const authModalContentRenderer = () => {
+    if (authState === "login") return <Login />;
+    if (authState === "register") return <Register />;
+    if (authState === "forgotPassword") return <ForgotPassword />;
+  };
+
   return (
     <>
       <Modal
         isOpen={isOpen}
         onClose={handleCloseModal}
-        title={isLogin ? "Log in" : "Sign up"}
+        title={authModalTitle()}
       >
-        <div className="flex items-center justify-center gap-2">
-          <TextView type="paragraph-small" weight="medium">
-            {isLogin ? "Don't have an account?" : "Already have an account?"}
-          </TextView>
-          <TextView
-            type="paragraph-small"
-            weight="medium"
-            className="cursor-pointer text-primary-100"
-            onClick={() => setIsLogin(!isLogin)}
-          >
-            {isLogin ? "Sign up" : "Log in"}
-          </TextView>
-        </div>
-        {isLogin ? <Login /> : <Register />}
+        {authState !== "forgotPassword" && (
+          <div className="flex items-center justify-center gap-2">
+            <TextView type="paragraph-small" weight="medium">
+              {authState === "login"
+                ? "Don't have an account?"
+                : "Already have an account?"}
+            </TextView>
+            <TextView
+              type="paragraph-small"
+              weight="medium"
+              className="cursor-pointer text-primary-100"
+              onClick={() =>
+                setAuthState(authState === "login" ? "register" : "login")
+              }
+            >
+              {authState === "login" ? "Sign up" : "Log in"}
+            </TextView>
+          </div>
+        )}
+        {authModalContentRenderer()}
       </Modal>
+
       <div className="z-10 flex h-full w-full items-center justify-center px-4 py-5">
         <div className="flex h-full w-full max-w-[900px] flex-col justify-between gap-6">
           {/* Messages Container */}

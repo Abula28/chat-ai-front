@@ -1,6 +1,12 @@
 import { useMutation } from "@tanstack/react-query";
-import { LoginReqT, RegisterReqT } from "../types";
-import { getUserCheckIn, postLogin, postRegister } from "../services";
+import { LoginReqT, RegisterReqT, ResetPasswordReqT } from "../types";
+import {
+  getUserCheckIn,
+  postForgotPassword,
+  postLogin,
+  postRegister,
+  postResetPassword,
+} from "../services";
 import { isAuth } from "../../utils";
 
 export const useLoginReq = () => {
@@ -26,5 +32,19 @@ export const useUserCheckInReq = () => {
       return getUserCheckIn();
     },
     mutationKey: ["useUserCheckInReq"],
+  });
+};
+
+export const useForgotPasswordReq = () => {
+  return useMutation({
+    mutationFn: (email: string) => postForgotPassword(email),
+    mutationKey: ["useForgotPasswordReq"],
+  });
+};
+
+export const useResetPasswordReq = () => {
+  return useMutation({
+    mutationFn: (data: ResetPasswordReqT) => postResetPassword(data),
+    mutationKey: ["useResetPasswordReq"],
   });
 };

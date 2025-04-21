@@ -1,8 +1,7 @@
-import { Button, Input } from "../../common";
+import { Button, Input, TextView } from "../../common";
 import { useLoginReq } from "../../../backend/requests/auth";
 import { useState } from "react";
 import { toast } from "react-toastify";
-import { AxiosError } from "axios";
 import useUserStore from "../../../store/userStore";
 import useAuthModalStore from "../../../store/authModalStore";
 import { ErrorResT, LoginReqT } from "../../../backend";
@@ -10,7 +9,7 @@ import { ErrorResT, LoginReqT } from "../../../backend";
 const Login = () => {
   const { setData } = useUserStore();
   const { mutate, isPending } = useLoginReq();
-  const { setIsOpen } = useAuthModalStore();
+  const { setIsOpen, setAuthState } = useAuthModalStore();
   const [values, setValues] = useState<LoginReqT>({
     email: "",
     password: "",
@@ -57,6 +56,17 @@ const Login = () => {
         onChange={handleChange}
         value={values.password}
       />
+
+      <div className="flex w-full justify-end">
+        <TextView
+          type="paragraph-small"
+          weight="medium"
+          className="cursor-pointer text-primary-100"
+          onClick={() => setAuthState("forgotPassword")}
+        >
+          Forgot Password?
+        </TextView>
+      </div>
 
       <Button
         variant="primary"

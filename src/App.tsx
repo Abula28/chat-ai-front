@@ -9,6 +9,7 @@ import MainComponent from "./components/main-component/MainComponent";
 import { QueryClientProvider } from "@tanstack/react-query";
 import { ToastContainer } from "react-toastify";
 import { queryClient } from "./lib";
+import ResetPassword from "./components/auth-components/reset-password/ResetPassword";
 
 const App: React.FC = () => {
   return (
@@ -33,7 +34,12 @@ const App: React.FC = () => {
             <Route path="/" element={<MainComponent />} />
             <Route path="/:sessionId" element={<MainComponent />} />
           </Route>
+
+          {/* Reset Password Route */}
+
+          <Route path="/reset-password/:token" element={<ResetPassword />} />
         </Routes>
+
         <ToastContainer
           limit={3}
           hideProgressBar={true}

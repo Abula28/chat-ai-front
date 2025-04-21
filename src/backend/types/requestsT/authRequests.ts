@@ -1,11 +1,18 @@
+export type PasswordsReqT = {
+  password: string;
+  passwordConfirm: string;
+};
+
 export interface LoginReqT {
   email: string;
   password: string;
 }
 
-export interface RegisterReqT {
+export interface RegisterReqT extends PasswordsReqT {
   username: string;
   email: string;
-  password: string;
-  passwordConfirm: string;
+}
+
+export interface ResetPasswordReqT extends PasswordsReqT {
+  token: string;
 }

@@ -3,6 +3,8 @@ export const endpoints = {
     login: "/auth/login",
     register: "/auth/register",
     checkIn: "/auth/check-in",
+    forgotPassword: "/auth/forgot-password",
+    resetPassword: (token: string) => `/auth/reset-password/${token}`,
   },
   admin: {
     // ========================== Messages ========================== //
@@ -26,7 +28,9 @@ export const endpoints = {
     createPrompt: "/admin/prompt",
     putPrompt: (id: string) => `/admin/prompt/${id}`,
   },
+  // ========================== Knowledge ========================== //
   getKnowledge: "/knowledge",
+
   chat: {
     postSession: "/chat/session",
     getSessionMessages: (id: string) => `/chat/session/${id}/messages`,
