@@ -1,8 +1,5 @@
 import { format } from "date-fns";
-import {
-  useGetSessionMessages,
-  useSendMessage,
-} from "../../../backend/requests/chat";
+import { useGetSessionMessages } from "../../../backend/requests/chat";
 import { Divider, TextView } from "../../common";
 import ReactMarkdown from "react-markdown";
 import { AiImage } from "../../../assets";
@@ -10,7 +7,7 @@ import useUserStore from "../../../store/userStore";
 import { GetSessionMessagesResT } from "../../../backend";
 import { useParams } from "react-router";
 import { AssistantLoader } from "../../common/loader/Loader";
-
+import { useMedia } from "../../../hooks/useMedia";
 const MessagesComponent = ({
   data,
   isSending,
@@ -19,6 +16,7 @@ const MessagesComponent = ({
   isSending: boolean;
 }) => {
   const { data: user } = useUserStore();
+  const isTablet = useMedia("tablet");
 
   const { isPending } = useGetSessionMessages();
   const { sessionId } = useParams();
@@ -29,10 +27,14 @@ const MessagesComponent = ({
     return (
       <div className="flex w-full items-center justify-center">
         <div className="flex flex-col items-center gap-2">
-          <TextView type="display-8" weight="medium">
+          <TextView
+            type={isTablet ? "display-8" : "display-6"}
+            className="text-center"
+            weight="medium"
+          >
             Start Conversation
           </TextView>
-          <TextView type="display-3" weight="medium">
+          <TextView type="display-3" weight="medium" className="text-center">
             No messages yet
           </TextView>
         </div>

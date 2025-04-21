@@ -19,12 +19,12 @@ const Layout = ({ children }: { children: React.ReactNode }) => {
   }, [data]);
 
   return (
-    <div className="flex overflow-hidden p-3">
+    <div className="flex h-screen w-screen overflow-hidden p-2 sm:p-3">
       <Sidebar />
-      <div className="relative flex h-[96vh] w-full flex-col justify-between rounded-2xl bg-slate-950">
+      <div className="relative flex h-[calc(100vh-1rem)] w-full flex-col justify-between rounded-2xl bg-slate-950 sm:h-[96vh]">
         <Header />
         <div className="layer_blur"></div>
-        {children}
+        <main className="flex-1 overflow-y-auto p-2 sm:p-4">{children}</main>
       </div>
     </div>
   );
